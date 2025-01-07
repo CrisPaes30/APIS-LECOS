@@ -8,4 +8,10 @@ import org.springframework.stereotype.Repository;
 public interface CadastroRepository extends JpaRepository<LcCadastro, Long> {
     boolean existsByCpfCnpj(String cpfCnpj);
 
+    boolean existsByEmail(String email);
+
+    LcCadastro findBynome(String nome);
+
+    LcCadastro findByEmail(String email);
+
 }

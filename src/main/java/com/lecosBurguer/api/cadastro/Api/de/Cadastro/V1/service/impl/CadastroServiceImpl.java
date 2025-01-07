@@ -1,7 +1,7 @@
 package com.lecosBurguer.api.cadastro.Api.de.Cadastro.V1.service.impl;
 
 
-import com.lecosBurguer.api.cadastro.Api.de.Cadastro.V1.dto.RequestDTO;
+import com.lecosBurguer.api.cadastro.Api.de.Cadastro.V1.requestDTO.requestCadastroDTO.RequestDTO;
 import com.lecosBurguer.api.cadastro.Api.de.Cadastro.V1.entities.LcCadastro;
 import com.lecosBurguer.api.cadastro.Api.de.Cadastro.V1.exceptions.BusinessException;
 import com.lecosBurguer.api.cadastro.Api.de.Cadastro.V1.repository.CadastroRepository;
@@ -35,6 +35,9 @@ public class CadastroServiceImpl implements CadastroService {
 
         LcCadastro lcCadastro = new LcCadastro();
         lcCadastro.setNome(getValidField(cadastroData.getNome(), CP_0003.getCode()));
+
+        validaEmail(cadastroData.getEmail());
+
         lcCadastro.setEmail(getValidField(cadastroData.getEmail(), CP_0004.getCode()));
 
         String cpfCnpj = getValidField(cadastroData.getCpfCnpj(), CP_0005.getCode());
@@ -72,9 +75,11 @@ public class CadastroServiceImpl implements CadastroService {
     }
 
     private void isValidCpfCnpj(String cpfCnpj) {
-        if (cpfCnpj.length() == 11 && !isValidCpf(cpfCnpj)) {
+        boolean isCpfCnpj = isValidCpf(cpfCnpj) || isValidCnpj(cpfCnpj);
+        String cleanCpfCnpj = removeNonDigits(cpfCnpj);
+        if (cleanCpfCnpj.length() == 11 && !isCpfCnpj) {
             throw new BusinessException(CP_0015.getCode());
-        } else if (cpfCnpj.length() != 11 && !isValidCnpj(cpfCnpj)) {
+        } else if (cleanCpfCnpj.length() != 11 && !isCpfCnpj) {
             throw new BusinessException(CP_0016.getCode());
         }
     }
@@ -106,7 +111,7 @@ public class CadastroServiceImpl implements CadastroService {
 
     @Override
     public boolean isValidCpf(String cpf) {
-        cpf = cpf.replaceAll("\\D", ""); // Remove não dígitos
+        cpf = removeNonDigits(cpf);
         if (cpf.length() != 11) return false;
 
         int[] weights1 = {10, 9, 8, 7, 6, 5, 4, 3, 2};
@@ -117,13 +122,17 @@ public class CadastroServiceImpl implements CadastroService {
 
     @Override
     public boolean isValidCnpj(String cnpj) {
-        cnpj = cnpj.replaceAll("\\D", ""); // Remove não dígitos
+        cnpj = removeNonDigits(cnpj);
         if (cnpj.length() != 14) return false;
 
         int[] weights1 = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
         int[] weights2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
 
         return validateDocument(cnpj, weights1, weights2);
+    }
+
+    private String removeNonDigits(String value) {
+        return value.replaceAll("\\D", "");
     }
 
     private boolean validateDocument(String doc, int[] weights1, int[] weights2) {
@@ -144,5 +153,17 @@ public class CadastroServiceImpl implements CadastroService {
 
     private boolean isCpfCnpjCadastrado(String cpfCnpj) {
         return cadastroRepository.existsByCpfCnpj(cpfCnpj);
+    }
+
+    private void validaEmail(String email) {
+        if (!email.contains("@")) {
+            throw new BusinessException(CP_0019.getCode());
+        }
+
+        boolean exists = cadastroRepository.existsByEmail(email);
+
+        if (exists) {
+            throw new BusinessException(CP_0020.getCode());
+        }
     }
 }

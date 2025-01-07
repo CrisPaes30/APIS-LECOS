@@ -8,7 +8,7 @@ tags:
   - name: Usuários
     description: APIs relacionadas a cadastro e login
 paths:
-  /v1/login-user:
+  /v1/user-registration:
     post:
       summary: Cadastro de Usuários
       tags:
@@ -63,6 +63,26 @@ paths:
                             type: string
                             enum: [ "S", "N" ]
       responses:
+        '201':
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                message:
+                                  type: string
         '207':
           description: Resposta com múltiplos status
           content:
@@ -78,15 +98,15 @@ paths:
                         items:
                           type: object
                           properties:
-                            itemId:
-                              type: string
                             data:
                               type: object
+                              nullable: true
                               properties:
                                 message:
                                   type: string
                             error:
                               type: array
+                              nullable: true
                               items:
                                 type: object
                                 properties:

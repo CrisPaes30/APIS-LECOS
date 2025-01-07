@@ -1,8 +1,6 @@
 package com.lecosBurguer.api.cadastro.Api.de.Cadastro.V1.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +13,12 @@ public class MensagemResolver {
 
     private final ReloadableResourceBundleMessageSource messageSource;
 
-    public MensagemResolver( @Qualifier(MESSAGE_SOURCE_BEAN_IDENTIFIER) ReloadableResourceBundleMessageSource messageSource) {
+    public MensagemResolver(@Qualifier(MESSAGE_SOURCE_BEAN_IDENTIFIER) ReloadableResourceBundleMessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
-    public String getMensagem(String codigo) {
+    public String getMensagem(String codigo, Object... args) {
         Locale locale = Locale.getDefault();
-        return messageSource.getMessage(codigo, null, locale);
+        return messageSource.getMessage(codigo, args, locale);
     }
 }

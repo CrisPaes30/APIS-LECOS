@@ -1,4 +1,4 @@
-package com.lecosBurguer.api.cadastro.Api.de.Cadastro.V1.dto;
+package com.lecosBurguer.api.cadastro.Api.de.Cadastro.V1.requestDTO.requestCadastroDTO;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class Items {
 
-    private String itemId;
     private Cadastro cadastro;
 }
