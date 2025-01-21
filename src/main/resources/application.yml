@@ -1,5 +1,7 @@
 server:
   port: 8190
+  servlet:
+    context-path: /api
 spring:
   datasource:
     url: jdbc:oracle:thin:@//localhost:1521/XE
@@ -11,3 +13,19 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/lecosBurguer
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+keycloak:
+  auth-server-url: http://localhost:8080
+  realm: lecosBurguer
+  resource: lecosBurguer
+  credentials:
+    username: cristian
+    password: 12345
+  public-client: true
+  ssl-required: external
+  use-resource-role-mappings: true
