@@ -16,6 +16,7 @@ import java.util.List;
 
 import static com.lecosBurguer.apis.config.CadastroConfig.MESSAGE_SOURCE_BEAN_IDENTIFIER;
 import static com.lecosBurguer.apis.enums.CadastroEnums.CP_0018;
+import static com.lecosBurguer.apis.enums.CadastroEnums.CP_0028;
 
 @Service
 public class CadastroBussines {
@@ -48,7 +49,7 @@ public class CadastroBussines {
             try {
                 cadastroService.cadastro(requestDTO);
 
-                String nomeCadastro = requestDTO.getItem().get(0).getCadastro().getNome();
+                String nomeCadastro = requestDTO.getItem().get(0).getCadastro().getUsuario();
                 message = resolver.getMensagem(CP_0018.getCode(), nomeCadastro);
 
                 messageData.setMessage(message);
@@ -60,7 +61,12 @@ public class CadastroBussines {
                 ErrorDetail error = new ErrorDetail();
                 error.setCode(e.getCode());
                 error.setMessage(message);
-                error.setAction("Corrija os dados informados e tente novamente.");
+
+                if(e.getCode().equals(CP_0028.getCode())) {
+                    error.setAction(null);
+                } else {
+                    error.setAction("Corrija os dados informados e tente novamente.");
+                }
 
                 List<ErrorDetail> errors = new ArrayList<>();
                 errors.add(error);

@@ -48,11 +48,17 @@ public class CadastroServiceImpl implements CadastroService {
                 .orElseThrow(() -> new BusinessException(CP_0002.getCode()));
 
         LcCadastro lcCadastro = new LcCadastro();
+
         lcCadastro.setNome(getValidField(cadastroData.getNome(), CP_0003.getCode()));
 
-        validaEmail(cadastroData.getEmail());
+        String email = getValidField(
+                cadastroData.getEmail() != null ? cadastroData.getEmail().toLowerCase() : null,
+                CP_0004.getCode()
+        );
 
-        lcCadastro.setEmail(getValidField(cadastroData.getEmail().toLowerCase(), CP_0004.getCode()));
+        validaEmail(email);
+
+        lcCadastro.setEmail(email);
 
         String cpfCnpj = getValidField(cadastroData.getCpfCnpj(), CP_0005.getCode());
         if (isCpfCnpjCadastrado(cpfCnpj)) {
@@ -77,7 +83,9 @@ public class CadastroServiceImpl implements CadastroService {
             throw new BusinessException(CP_0027.getCode());
         }
 
-        lcCadastro.setIndNotificacao(cadastroData.getIndNotificacao());
+        String notificacao = validaNotificacao(cadastroData.getIndNotificacao());
+
+        lcCadastro.setIndNotificacao(notificacao);
 
         boolean isValidSecret = validaSenhaCadastro.validaSecretForte(cadastroData.getSenha(), lcCadastro);
 
@@ -95,7 +103,7 @@ public class CadastroServiceImpl implements CadastroService {
 
         cadastroUsuarioKeyCloak.cadastroUsuarioKeyCloak(requestDTO.getItem().get(0).getCadastro().getUsuario(),
                 requestDTO.getItem().get(0).getCadastro().getEmail(), requestDTO.getItem().get(0).getCadastro().getSobrenome(),
-                requestDTO.getItem().get(0).getCadastro().getNome() ,"cliente");
+                requestDTO.getItem().get(0).getCadastro().getNome() ,"cliente", requestDTO.getItem().get(0).getCadastro().getSenha());
     }
 
     private String getValidField(String field, String errorMessage) {
@@ -110,6 +118,10 @@ public class CadastroServiceImpl implements CadastroService {
     }
 
     private void validaEmail(String email) {
+        if(email == null || email.isEmpty()) {
+            throw new BusinessException(CP_0004.getCode());
+        }
+
         if (!email.contains("@")) {
             throw new BusinessException(CP_0019.getCode());
         }
@@ -118,6 +130,15 @@ public class CadastroServiceImpl implements CadastroService {
 
         if (exists) {
             throw new BusinessException(CP_0020.getCode());
+        }
+    }
+
+    private String validaNotificacao(Boolean notificacao) {
+
+        if (notificacao) {
+            return "S";
+        } else {
+            return "N";
         }
     }
 }

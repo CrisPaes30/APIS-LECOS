@@ -28,7 +28,12 @@ public enum CadastroEnums {
     CP_0024("CP-0024"),
     CP_0025("CP-0025"),
     CP_0026("CP-0026"),
-    CP_0027("CP-0027");
+    CP_0027("CP-0027"),
+    CP_0028("CP-0028"),
+    CP_0029("CP-0029"),
+    CP_0030("CP-0030"),
+    CP_0031("CP-0031"),
+    CP_0032("CP-0032");
 
     private String code;
 

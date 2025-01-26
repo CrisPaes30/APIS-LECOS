@@ -1,22 +1,23 @@
 package com.lecosBurguer.apis.api.cadastro.business;
 
 
-import com.lecosBurguer.apis.api.cadastro.request.Cadastro;
-import com.lecosBurguer.apis.api.cadastro.request.Endereco;
-import com.lecosBurguer.apis.api.cadastro.request.Items;
 import com.lecosBurguer.apis.api.cadastro.request.RequestDTO;
 import com.lecosBurguer.apis.api.cadastro.service.impl.CadastroServiceImpl;
+import com.lecosBurguer.apis.api.cadastro.utils.CadastroUtilsError;
+import com.lecosBurguer.apis.api.cadastro.utils.CadastroUtilsSucesso;
+import com.lecosBurguer.apis.api.response.ResponseDTO;
+import com.lecosBurguer.apis.exceptions.BusinessException;
 import com.lecosBurguer.apis.utils.MensagemResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import static com.lecosBurguer.apis.config.CadastroConfig.MESSAGE_SOURCE_BEAN_IDENTIFIER;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -33,67 +34,63 @@ class CadastroBusinessTest {
     private ReloadableResourceBundleMessageSource messageSource;
 
     @Mock
+    @Qualifier(MESSAGE_SOURCE_BEAN_IDENTIFIER)
     private MensagemResolver resolver;
 
     private String message;
 
+    private final String CP_000 = "CP_000";
+    private final String CP_0028 = "CP-0028";
+
+
 
     @Test
-    void createResponse() {
+    void testeDevecriarResponseComSucesso() {
+
+        CadastroUtilsSucesso cadastroUtilsSucesso = new CadastroUtilsSucesso();
 
         doNothing().when(cadastroService).cadastro(any(RequestDTO.class));
 
-        cadastroBussines.createResponse(createResponseStub());
+        cadastroBussines.createResponse(cadastroUtilsSucesso.createResponseStub());
 
         verify(cadastroService, times(1)).cadastro(any(RequestDTO.class));
     }
 
-    public RequestDTO createResponseStub() {
-        RequestDTO requestDTO = new RequestDTO();
+    @Test
+    void testeDevecriarResponseComErro() {
 
-        requestDTO.setItem(listItemStub());
+        CadastroUtilsError cadastroUtilsError = new CadastroUtilsError();
 
-        return requestDTO;
+        doThrow(new BusinessException(CP_000)).when(cadastroService).cadastro(any(RequestDTO.class));
+        when(messageSource.getMessage(any(), any(), any())).thenReturn(null);
+
+        ResponseDTO response = cadastroBussines.createResponse(cadastroUtilsError.createResponseStub());
+
+        assertNotNull(response);
+        assertFalse(response.getData().getItems().isEmpty());
+        assertNotNull(response.getData().getItems().get(0).getError());
+        assertEquals(CP_000, response.getData().getItems().get(0).getError().get(0).getCode());
+        assertEquals(null, response.getData().getItems().get(0).getError().get(0).getMessage());
+
     }
 
-    public List<Items> listItemStub() {
+    @Test
+    void testeDevecriarResponseComErroComAMenssagemCP_0028() {
 
-        List<Items> items = new ArrayList<>();
-        Items item = new Items();
+        CadastroUtilsError cadastroUtilsError = new CadastroUtilsError();
 
-        item.setCadastro(cadastroStub());
+        doThrow(new BusinessException(CP_0028)).when(cadastroService).cadastro(any(RequestDTO.class));
+        when(messageSource.getMessage(any(), any(), any())).thenReturn(null);
 
-        items.add(item);
+        ResponseDTO response = cadastroBussines.createResponse(cadastroUtilsError.createResponseStub());
 
-        return items;
+        assertNotNull(response);
+        assertFalse(response.getData().getItems().isEmpty());
+        assertNotNull(response.getData().getItems().get(0).getError());
+        assertEquals(CP_0028, response.getData().getItems().get(0).getError().get(0).getCode());
+        assertEquals(null, response.getData().getItems().get(0).getError().get(0).getMessage());
+
     }
 
-    public Cadastro cadastroStub() {
-        Cadastro cadastro = new Cadastro();
 
-        cadastro.setNome("Leandro");
-        cadastro.setSobrenome("Silva");
-        cadastro.setEmail("3hM7f@example.com");
-        cadastro.setTelefone("11999999999");
-        cadastro.setCpfCnpj("99999999999");
-        cadastro.setIndNotificacao("S");
-        cadastro.setUsuario("leandro");
-        cadastro.setSenha("123456");
-        cadastro.setEndereco(enderecoStub());
-
-        return cadastro;
-    }
-
-    public Endereco enderecoStub() {
-        Endereco endereco = new Endereco();
-
-        endereco.setCep("99999999");
-        endereco.setLogradouro("rua 1");
-        endereco.setBairro("bairro 1");
-        endereco.setNumero("1");
-        endereco.setComplemento("complemento 1");
-        endereco.setUf("SP");
-
-        return endereco;
-    }
 }
