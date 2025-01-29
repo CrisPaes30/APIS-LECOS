@@ -14,7 +14,7 @@ public class ValidaCpfCnpj {
         String cleanCpfCnpj = removeCaracteresEspeciais(cpfCnpj);
         if (cleanCpfCnpj.length() == 11 && !isCpfCnpj) {
             throw new BusinessException(CP_0015.getCode());
-        } else if (cleanCpfCnpj.length() != 11 && !isCpfCnpj) {
+        } else if (cleanCpfCnpj.length() > 11 && !isCpfCnpj) {
             throw new BusinessException(CP_0016.getCode());
         }
     }

@@ -87,7 +87,7 @@ public class CadastroServiceImpl implements CadastroService {
 
         lcCadastro.setIndNotificacao(notificacao);
 
-        boolean isValidSecret = validaSenhaCadastro.validaSecretForte(cadastroData.getSenha(), lcCadastro);
+        boolean isValidSecret = validaSenhaCadastro.validaSecretForte(cadastroData.getSenha());
 
         if (isValidSecret) {
             lcCadastro.setSecret(passwordEncoder.encode(cadastroData.getSenha()));
@@ -118,9 +118,6 @@ public class CadastroServiceImpl implements CadastroService {
     }
 
     private void validaEmail(String email) {
-        if(email == null || email.isEmpty()) {
-            throw new BusinessException(CP_0004.getCode());
-        }
 
         if (!email.contains("@")) {
             throw new BusinessException(CP_0019.getCode());

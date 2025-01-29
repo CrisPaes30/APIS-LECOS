@@ -9,7 +9,7 @@ import static com.lecosBurguer.apis.enums.CadastroEnums.CP_0017;
 @Component
 public class ValidaSenhaCadastro {
 
-    public boolean validaSecretForte(String secret, LcCadastro lcCadastro) {
+    public boolean validaSecretForte(String secret) {
         if (!isValidSecret(secret)) {
             throw new BusinessException(
                     CP_0017.getCode()
