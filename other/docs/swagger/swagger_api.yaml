@@ -60,8 +60,8 @@ paths:
                           secret:
                             type: string
                           indNotificacao:
-                            type: string
-                            enum: [ "S", "N" ]
+                            type: boolean
+                            enum: [ true, false ]
       responses:
         '201':
           description: Usuário criado com sucesso
