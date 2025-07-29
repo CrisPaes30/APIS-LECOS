@@ -5,56 +5,45 @@ import com.lecosBurguer.apis.api.cadastro.request.Endereco;
 import com.lecosBurguer.apis.api.cadastro.request.Items;
 import com.lecosBurguer.apis.api.cadastro.request.RequestDTO;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CadastroUtilsError {
 
     public RequestDTO createResponseStub() {
-        RequestDTO requestDTO = new RequestDTO();
-
-        requestDTO.setItem(listItemStub());
-
-        return requestDTO;
+        return RequestDTO.builder()
+                .item(listItemStub())
+                .build();
     }
 
     private List<Items> listItemStub() {
-
-        List<Items> items = new ArrayList<>();
-        Items item = new Items();
-
-        item.setCadastro(cadastroStub());
-
-        items.add(item);
-
-        return items;
+        return List.of(
+                Items.builder()
+                        .cadastro(cadastroStub())
+                        .build()
+        );
     }
 
     private Cadastro cadastroStub() {
-        Cadastro cadastro = new Cadastro();
-
-        cadastro.setSobrenome("Silva");
-        cadastro.setEmail("3hM7f@example.com");
-        cadastro.setTelefone("11999999999");
-        cadastro.setCpfCnpj("99999999999");
-        cadastro.setIndNotificacao(true);
-        cadastro.setUsuario("leandro");
-        cadastro.setSenha("123456");
-        cadastro.setEndereco(enderecoStub());
-
-        return cadastro;
+        return Cadastro.builder()
+                .sobrenome("Silva")
+                .email("3hM7f@example.com")
+                .telefone("11999999999")
+                .cpfCnpj("99999999999")
+                .indNotificacao(true)
+                .usuario("leandro")
+                .senha("123456")
+                .endereco(enderecoStub())
+                .build();
     }
 
     private Endereco enderecoStub() {
-        Endereco endereco = new Endereco();
-
-        endereco.setCep("99999999");
-        endereco.setLogradouro("rua 1");
-        endereco.setBairro("bairro 1");
-        endereco.setNumero("1");
-        endereco.setComplemento("complemento 1");
-        endereco.setUf("SP");
-
-        return endereco;
+        return Endereco.builder()
+                .cep("99999999")
+                .logradouro("rua 1")
+                .bairro("bairro 1")
+                .numero("1")
+                .complemento("complemento 1")
+                .uf("SP")
+                .build();
     }
 }

@@ -39,6 +39,11 @@ public class UserCadastroControllerImpl implements UserCadastroController {
     }
 
     private boolean hasError(ResponseDTO responseBuilder) {
-        return responseBuilder.getData().getItems().stream().anyMatch(item -> item.getError() != null);
+        if (responseBuilder == null || responseBuilder.getData() == null) {
+            return false;
+        }
+
+        return responseBuilder.getData().getItems().stream()
+                .anyMatch(item -> item.getError() != null && !item.getError().isEmpty());
     }
 }

@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -78,13 +79,18 @@ class CadastroServiceImplTest {
 
     @Test
     void testDeveCadastrarComSucesso() throws JsonProcessingException {
-        CadastroUtilsSucesso cadastroUtilsSucesso = new CadastroUtilsSucesso();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase()
+                                .build())
+                        .build())).build();
         LcCadastro lcCadastro = new LcCadastro();
 
         when(validaUsuarioExistente.validaUsuario(any())).thenReturn(true);
         when(cadastroRepository.save(any())).thenReturn(lcCadastro);
 
-        cadastroServiceImpl.cadastro(cadastroUtilsSucesso.createResponseStub());
+        cadastroServiceImpl.cadastro(cadastro);
 
         verify(cadastroRepository, times(1)).save(any());
 
@@ -93,26 +99,25 @@ class CadastroServiceImplTest {
     @Test
     void testeDeveDarErroCP_0001QuandoArequestForNull() {
 
-        Items itemDTO = new Items();
-        itemDTO.setCadastro(null);
-
-        RequestDTO requestDTO = new RequestDTO();
-        requestDTO.setItem(Collections.singletonList(itemDTO));
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(null)
+                                .build())).build();
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(requestDTO));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0001 + " - []", exception.getMessage());
     }
 
     @Test
-    void testDeveDarErroCP_0002QuandoArequestForNull() {
-
-        RequestDTO requestDTO = new RequestDTO();
-        requestDTO.setItem(Collections.emptyList());
+    void testDeveDarErroCP_0002QuandoNaoExistirCadastroValido() {
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of())
+                .build();
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(requestDTO));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0002 + " - []", exception.getMessage());
     }
@@ -131,10 +136,15 @@ class CadastroServiceImplTest {
     @Test
     void testeDevedarErroCP_004QuandoEmailForNulo() {
 
-        CadastroUtilsErrorEmail cadastroUtilsError = new CadastroUtilsErrorEmail();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase().email(null)
+                                .build())
+                        .build())).build();
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(cadastroUtilsError.createResponseStub()));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0004 + " - []", exception.getMessage());
     }
@@ -142,10 +152,15 @@ class CadastroServiceImplTest {
     @Test
     void testeDevedarErroCP_005QuandoCpfCnpjForNulo() {
 
-        CadastroUtilsErrorCpfCnpjError cadastroUtilsErrorCpfCnpjError = new CadastroUtilsErrorCpfCnpjError();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase().cpfCnpj(null)
+                                .build())
+                        .build())).build();
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(cadastroUtilsErrorCpfCnpjError.createResponseStub()));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0005 + " - []", exception.getMessage());
     }
@@ -153,12 +168,17 @@ class CadastroServiceImplTest {
     @Test
     void testeDevedarErroCP_006QuandoCpfCnpjJaCadastrado() {
 
-        CadastroUtilsErrorCpfCnpjJaExiste cadastroUtilsErrorCpfCnpjError = new CadastroUtilsErrorCpfCnpjJaExiste();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase()
+                                .build())
+                        .build())).build();
 
         when(cadastroRepository.existsByCpfCnpj(any())).thenReturn(true);
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(cadastroUtilsErrorCpfCnpjError.createResponseStub()));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0006 + " - []", exception.getMessage());
         verify(cadastroRepository, times(1)).existsByCpfCnpj(any());
@@ -167,10 +187,15 @@ class CadastroServiceImplTest {
     @Test
     void testDeveDarErroCP_0007QuandoTelefoneForNulo() {
 
-        CadastroUtilsTelefoneError cadastroUtilsError = new CadastroUtilsTelefoneError();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase().telefone(null)
+                                .build())
+                        .build())).build();
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(cadastroUtilsError.createResponseStub()));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0007 + " - []", exception.getMessage());
     }
@@ -189,10 +214,18 @@ class CadastroServiceImplTest {
     @Test
     void testDeveDarErroCP_0009QuandologradouroForNulo() {
 
-        CadastroUtilsLogradouroError endereco = new CadastroUtilsLogradouroError();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase().endereco(CadastroStubBase
+                                        .enderecoBase()
+                                        .logradouro(null)
+                                        .build())
+                                .build())
+                        .build())).build();
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(endereco.createResponseStub()));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0009 + " - []", exception.getMessage());
 
@@ -214,22 +247,35 @@ class CadastroServiceImplTest {
     @Test
     void testDeveDarErroCP_0011QuandoNumeroForNulo() {
 
-        CadastroUtilsNumeroError endereco = new CadastroUtilsNumeroError();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase().endereco(CadastroStubBase
+                                        .enderecoBase()
+                                        .numero(null)
+                                        .build())
+                                .build())
+                        .build())).build();
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(endereco.createResponseStub()));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0011 + " - []", exception.getMessage());
 
     }
 
     @Test
-    void testDeveDarErroCP_0012QuandoEnderecoForNulo() {
+    void testDeveDarErroCP_0012QuandoUfForNulo() {
 
-        CadastroUtilsUfError endereco = new CadastroUtilsUfError();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase().endereco(CadastroStubBase.enderecoBase().uf(null).build())
+                                .build())
+                        .build())).build();
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(endereco.createResponseStub()));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0012 + " - []", exception.getMessage());
 
@@ -238,12 +284,17 @@ class CadastroServiceImplTest {
     @Test
     void testDeveDarErroCP_0013QuandoUsuarioForNulo() {
 
-        CadastroUtilsUsuarioError endereco = new CadastroUtilsUsuarioError();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase().usuario(null)
+                                .build())
+                        .build())).build();
 
         when(validaUsuarioExistente.validaUsuario(any())).thenReturn(true);
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(endereco.createResponseStub()));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0013 + " - []", exception.getMessage());
 
@@ -252,13 +303,18 @@ class CadastroServiceImplTest {
     @Test
     void testeDeveDarErroCP_0014QuandoAoSalvarRequest() {
 
-        CadastroUtilsSucesso cadastroUtilsSucesso = new CadastroUtilsSucesso();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase()
+                                .build())
+                        .build())).build();
 
         when(validaUsuarioExistente.validaUsuario(any())).thenReturn(true);
         when(cadastroRepository.save(any())).thenThrow(new BusinessException(CP_0014, "Erro ao salvar"));
 
         BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(cadastroUtilsSucesso.createResponseStub()));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0014, exception.getCode());
     }
@@ -268,13 +324,18 @@ class CadastroServiceImplTest {
     @Test
     void testDeveValidarSenhaForte() throws JsonProcessingException {
 
-        CadastroUtilsSucesso cadastroUtilsSucesso = new CadastroUtilsSucesso();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase()
+                                .build())
+                        .build())).build();
 
         when(validaUsuarioExistente.validaUsuario(any())).thenReturn(true);
         when(validaSenhaCadastro.validaSecretForte(any())).thenReturn(true);
         when(cadastroRepository.save(any())).thenReturn(new LcCadastro());
 
-        cadastroServiceImpl.cadastro(cadastroUtilsSucesso.createResponseStub());
+        cadastroServiceImpl.cadastro(cadastro);
 
         verify(validaUsuarioExistente, times(1)).validaUsuario(any());
         verify(validaSenhaCadastro, times(1)).validaSecretForte(any());
@@ -284,10 +345,16 @@ class CadastroServiceImplTest {
 
     @Test
     void testDeveValidarSeUsuarioJaCadastrado() {
-        CadastroUtilsSucesso cadastroUtilsSucesso = new CadastroUtilsSucesso();
+
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase()
+                                .build())
+                        .build())).build();
 
         BusinessException businessException = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(cadastroUtilsSucesso.createResponseStub()));
+                () -> cadastroServiceImpl.cadastro(cadastro));
 
         assertEquals(CP_0027, businessException.getCode());
     }
@@ -295,13 +362,18 @@ class CadastroServiceImplTest {
     @Test
     void testDeveDarSucessoQuandoNotificaoforFalse() throws JsonProcessingException {
 
-        CadastroUtilsSucessoComNotificacaoFalse cadastroUtilsSucesso = new CadastroUtilsSucessoComNotificacaoFalse();
+        RequestDTO cadastro = RequestDTO.builder()
+                .item(List.of(Items.builder()
+                        .cadastro(CadastroStubBase
+                                .cadastroBase().indNotificacao(false)
+                                .build())
+                        .build())).build();
 
         when(validaUsuarioExistente.validaUsuario(any())).thenReturn(true);
         when(validaSenhaCadastro.validaSecretForte(any())).thenReturn(true);
         when(cadastroRepository.save(any())).thenReturn(new LcCadastro());
 
-        cadastroServiceImpl.cadastro(cadastroUtilsSucesso.createResponseStub());
+        cadastroServiceImpl.cadastro(cadastro);
 
         verify(validaUsuarioExistente, times(1)).validaUsuario(any());
         verify(validaSenhaCadastro, times(1)).validaSecretForte(any());

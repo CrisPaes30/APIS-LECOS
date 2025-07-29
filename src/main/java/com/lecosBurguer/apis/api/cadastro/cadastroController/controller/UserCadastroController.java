@@ -9,6 +9,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface UserCadastroController {
 
-    //@PostMapping
     ResponseEntity<ResponseDTO> cadastro(@Valid @RequestBody RequestDTO requestDTO);
 }

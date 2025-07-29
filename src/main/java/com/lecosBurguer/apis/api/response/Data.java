@@ -1,7 +1,10 @@
 package com.lecosBurguer.apis.api.response;
 
+import lombok.Builder;
+
 import java.util.List;
 
+@Builder
 public class Data {
     private List<Item> items;
 

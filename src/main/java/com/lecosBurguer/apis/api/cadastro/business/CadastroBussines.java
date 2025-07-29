@@ -23,12 +23,8 @@ import static com.lecosBurguer.apis.enums.CadastroEnums.CP_0028;
 public class CadastroBussines {
 
     private final CadastroServiceImpl cadastroService;
-
     private final ReloadableResourceBundleMessageSource messageSource;
-
     private final MensagemResolver resolver;
-
-    private String message;
 
     public CadastroBussines(CadastroServiceImpl cadastroService,
                             @Qualifier(MESSAGE_SOURCE_BEAN_IDENTIFIER) ReloadableResourceBundleMessageSource messageSource,
@@ -39,49 +35,50 @@ public class CadastroBussines {
     }
 
     public ResponseDTO createResponse(RequestDTO requestDTO) {
-        ResponseDTO responseDTO = new ResponseDTO();
-        Data data = new Data();
         List<Item> items = new ArrayList<>();
 
         requestDTO.getItem().forEach(requestItem -> {
-            Item item = new Item();
-            MessageData messageData = new MessageData();
-
             try {
                 cadastroService.cadastro(requestDTO);
 
-                String nomeCadastro = requestDTO.getItem().get(0).getCadastro().getUsuario();
-                message = resolver.getMensagem(CP_0018.getCode(), nomeCadastro);
+                String nomeCadastro = requestItem.getCadastro().getUsuario();
+                String mensagem = resolver.getMensagem(CP_0018.getCode(), nomeCadastro);
 
-                messageData.setMessage(message);
-                item.setData(messageData);
+                MessageData messageData = MessageData.builder()
+                        .message(mensagem)
+                        .status("Sucesso")
+                        .build();
+
+                Item item = Item.builder()
+                        .data(messageData)
+                        .build();
+
+                items.add(item);
 
             } catch (BusinessException e) {
-                message = messageSource.getMessage(e.getCode(), e.getArgs(), LocaleContextHolder.getLocale());
+                String mensagem = messageSource.getMessage(e.getCode(), e.getArgs(), LocaleContextHolder.getLocale());
 
-                ErrorDetail error = new ErrorDetail();
-                error.setCode(e.getCode());
-                error.setMessage(message);
+                ErrorDetail error = ErrorDetail.builder()
+                        .code(e.getCode())
+                        .message(mensagem)
+                        .action(CP_0028.getCode().equals(e.getCode()) ? null : "Corrija os dados informados e tente novamente.")
+                        .build();
 
-                if(e.getCode().equals(CP_0028.getCode())) {
-                    error.setAction(null);
-                } else {
-                    error.setAction("Corrija os dados informados e tente novamente.");
-                }
+                Item item = Item.builder()
+                        .error(List.of(error))
+                        .build();
 
-                List<ErrorDetail> errors = new ArrayList<>();
-                errors.add(error);
-
-                item.setError(errors);
+                items.add(item);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-
-            items.add(item);
         });
 
-        data.setItems(items);
-        responseDTO.setData(data);
-        return responseDTO;
+        return ResponseDTO.builder()
+                .data(Data.builder()
+                        .items(items)
+                        .build())
+                .build();
     }
 }
+

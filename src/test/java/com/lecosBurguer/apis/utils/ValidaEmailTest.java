@@ -1,8 +1,5 @@
 package com.lecosBurguer.apis.utils;
 
-import com.lecosBurguer.apis.api.cadastro.request.Cadastro;
-import com.lecosBurguer.apis.api.cadastro.utils.CadastroUtilsErrorEmailInvalido;
-import com.lecosBurguer.apis.api.cadastro.utils.CadastroUtilsSucesso;
 import com.lecosBurguer.apis.exceptions.BusinessException;
 import com.lecosBurguer.apis.repository.CadastroRepository;
 import org.junit.jupiter.api.Test;
