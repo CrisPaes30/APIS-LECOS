@@ -27,5 +27,5 @@ jobs:
       - name: Upload do JAR gerado
         uses: actions/upload-artifact@v4
         with:
-          name: app-jar
+          name: apis-lecos
           path: target/*.jar
