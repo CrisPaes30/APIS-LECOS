@@ -65,4 +65,7 @@ public class LcCadastro implements Serializable {
     @Column(name = "notificacao")
     private String indNotificacao;
 
+    @Column(name = "ativo")
+    private char clienteAtivo;
+
 }

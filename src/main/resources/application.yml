@@ -6,13 +6,23 @@ spring:
   datasource:
     url: jdbc:oracle:thin:@//localhost:1521/XE
     username: system
-    password: sdbanco
+    password: lecos
     driver-class-name: oracle.jdbc.OracleDriver
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
   jpa:
-    database-platform: org.hibernate.dialect.OracleDialect
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database-platform: org.hibernate.dialect.OracleDialect
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+  spring:
+    cloud:
+      openfeign:
+        enabled: true
   security:
     oauth2:
       resourceserver:
@@ -26,6 +36,23 @@ keycloak:
   credentials:
     username: cristian
     password: 12345
-  public-client: true
+    secret: 1fvhizrgCbPZbUtgri9ifM1XVwzdo9iS
+  public-client: false
   ssl-required: external
   use-resource-role-mappings: true
+jwt:
+  secret: Li3a3qs1bYUVkALNdUeHW_iwlE2Ik7QbnOM0w-oqs3o=
+  logging:
+    level:
+      feign.client: DEBUG
+      com.lecosBurguer.apis.token.brocker.AutenticacaoClient: DEBUG
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+     enabled: true

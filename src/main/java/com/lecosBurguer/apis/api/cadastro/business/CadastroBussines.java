@@ -1,10 +1,11 @@
 package com.lecosBurguer.apis.api.cadastro.business;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lecosBurguer.apis.api.cadastro.request.RequestDTO;
 import com.lecosBurguer.apis.api.response.*;
 import com.lecosBurguer.apis.exceptions.BusinessException;
-import com.lecosBurguer.apis.api.cadastro.service.impl.CadastroServiceImpl;
+import com.lecosBurguer.apis.api.cadastro.service.cadastroService.impl.CadastroServiceImpl;
 import com.lecosBurguer.apis.utils.MensagemResolver;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -72,6 +73,8 @@ public class CadastroBussines {
                 errors.add(error);
 
                 item.setError(errors);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
 
             items.add(item);

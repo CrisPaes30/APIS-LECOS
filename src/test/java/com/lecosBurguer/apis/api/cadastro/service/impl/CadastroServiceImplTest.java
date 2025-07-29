@@ -1,16 +1,17 @@
 package com.lecosBurguer.apis.api.cadastro.service.impl;
 
-import com.lecosBurguer.apis.api.cadastro.request.Cadastro;
-import com.lecosBurguer.apis.api.cadastro.request.Endereco;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lecosBurguer.apis.api.cadastro.request.Items;
 import com.lecosBurguer.apis.api.cadastro.request.RequestDTO;
-import com.lecosBurguer.apis.api.cadastro.service.cadastroService.CadastroService;
+import com.lecosBurguer.apis.api.cadastro.service.cadastroService.impl.CadastraUsuarioKeyCloakImpl;
+import com.lecosBurguer.apis.api.cadastro.service.cadastroService.impl.CadastroServiceImpl;
+import com.lecosBurguer.apis.api.cadastro.service.cadastroService.impl.EnviaEmailServiceImpl;
 import com.lecosBurguer.apis.api.cadastro.utils.*;
-import com.lecosBurguer.apis.api.response.Item;
 import com.lecosBurguer.apis.entities.LcCadastro;
 import com.lecosBurguer.apis.exceptions.BusinessException;
 import com.lecosBurguer.apis.repository.CadastroRepository;
 import com.lecosBurguer.apis.utils.ValidaCpfCnpj;
+import com.lecosBurguer.apis.utils.ValidaEmail;
 import com.lecosBurguer.apis.utils.ValidaSenhaCadastro;
 import com.lecosBurguer.apis.utils.ValidaUsuarioExistente;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collections;
 
-import static com.lecosBurguer.apis.enums.CadastroEnums.CP_0002;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,6 +52,12 @@ class CadastroServiceImplTest {
     @Mock
     private ValidaUsuarioExistente validaUsuarioExistente;
 
+    @Mock
+    private ValidaEmail validaEmail;
+
+    @Mock
+    private EnviaEmailServiceImpl enviaEmailService;
+
     private static final String CP_0001 = "CP-0001";
     private static final String CP_0002 = "CP-0002";
     private static final String CP_0003 = "CP-0003";
@@ -71,7 +77,7 @@ class CadastroServiceImplTest {
     private static final String CP_0027 = "CP-0027";
 
     @Test
-    void testDeveCadastrarComSucesso() {
+    void testDeveCadastrarComSucesso() throws JsonProcessingException {
         CadastroUtilsSucesso cadastroUtilsSucesso = new CadastroUtilsSucesso();
         LcCadastro lcCadastro = new LcCadastro();
 
@@ -254,38 +260,13 @@ class CadastroServiceImplTest {
         BusinessException exception = assertThrows(BusinessException.class,
                 () -> cadastroServiceImpl.cadastro(cadastroUtilsSucesso.createResponseStub()));
 
-        // Verifica se o código da exceção é o esperado
         assertEquals(CP_0014, exception.getCode());
     }
 
 
-    @Test
-    void testeDevedarErroCP_0019QuandoEmailEstiverNoFormatoInvalido() {
-
-        CadastroUtilsErrorEmailInvalido cadastroUtilsError = new CadastroUtilsErrorEmailInvalido();
-
-        BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(cadastroUtilsError.createResponseStub()));
-
-        assertEquals(CP_0019, exception.getCode());
-
-    }
 
     @Test
-    void testDeveDarErroCP_0020QuandoEmailForDuplicado() {
-
-        CadastroUtilsSucesso cadastroUtilsSucesso = new CadastroUtilsSucesso();
-
-        when(cadastroRepository.existsByEmail(any())).thenReturn(true);
-
-        BusinessException exception = assertThrows(BusinessException.class,
-                () -> cadastroServiceImpl.cadastro(cadastroUtilsSucesso.createResponseStub()));
-
-        assertEquals(CP_0020, exception.getCode());
-    }
-
-    @Test
-    void testDeveValidarSenhaForte() {
+    void testDeveValidarSenhaForte() throws JsonProcessingException {
 
         CadastroUtilsSucesso cadastroUtilsSucesso = new CadastroUtilsSucesso();
 
@@ -312,7 +293,7 @@ class CadastroServiceImplTest {
     }
 
     @Test
-    void testDeveDarSucessoQuandoNotificaoforFalse() {
+    void testDeveDarSucessoQuandoNotificaoforFalse() throws JsonProcessingException {
 
         CadastroUtilsSucessoComNotificacaoFalse cadastroUtilsSucesso = new CadastroUtilsSucessoComNotificacaoFalse();
 

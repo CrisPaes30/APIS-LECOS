@@ -33,7 +33,6 @@ public class Cadastro {
     @NotBlank(message = "O campo senha deve ser preenchido.")
     private String senha;
 
-   // @NotBlank(message = "O campo indNotificacao deve ser preenchido.")
     private Boolean indNotificacao;
 
 }

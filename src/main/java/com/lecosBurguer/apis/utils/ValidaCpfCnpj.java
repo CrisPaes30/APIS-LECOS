@@ -23,6 +23,8 @@ public class ValidaCpfCnpj {
         cpf = removeCaracteresEspeciais(cpf);
         if (cpf.length() != 11) return false;
 
+        if (cpf.chars().distinct().count() == 1) return false;
+
         int[] weights1 = {10, 9, 8, 7, 6, 5, 4, 3, 2};
         int[] weights2 = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2};
 
@@ -32,6 +34,8 @@ public class ValidaCpfCnpj {
     private boolean isValidCnpj(String cnpj) {
         cnpj = removeCaracteresEspeciais(cnpj);
         if (cnpj.length() != 14) return false;
+
+        if (cnpj.chars().distinct().count() == 1) return false;
 
         int[] weights1 = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
         int[] weights2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};

@@ -1,20 +1,25 @@
-package com.lecosBurguer.apis.api.cadastro.service.impl;
+package com.lecosBurguer.apis.api.cadastro.service.cadastroService.impl;
 
 
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lecosBurguer.apis.api.cadastro.request.RequestDTO;
 import com.lecosBurguer.apis.api.cadastro.service.cadastroService.CadastroService;
 import com.lecosBurguer.apis.entities.LcCadastro;
 import com.lecosBurguer.apis.exceptions.BusinessException;
 import com.lecosBurguer.apis.repository.CadastroRepository;
 import com.lecosBurguer.apis.utils.ValidaCpfCnpj;
+import com.lecosBurguer.apis.utils.ValidaEmail;
 import com.lecosBurguer.apis.utils.ValidaSenhaCadastro;
 import com.lecosBurguer.apis.utils.ValidaUsuarioExistente;
+import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import static com.lecosBurguer.apis.enums.CadastroEnums.*;
+
 
 @Service
 @Data
@@ -33,8 +38,13 @@ public class CadastroServiceImpl implements CadastroService {
 
     private final ValidaUsuarioExistente validaUsuarioExistente;
 
+    private final ValidaEmail validaEmail;
+
+    private final EnviaEmailServiceImpl enviaEmailService;
+
+    @Transactional
     @Override
-    public void cadastro(RequestDTO requestDTO) {
+    public void cadastro(RequestDTO requestDTO) throws JsonProcessingException {
         log.info("Realizando cadastro");
 
         var cadastroData = requestDTO.getItem().stream()
@@ -56,7 +66,7 @@ public class CadastroServiceImpl implements CadastroService {
                 CP_0004.getCode()
         );
 
-        validaEmail(email);
+        validaEmail.validaEmail(email);
 
         lcCadastro.setEmail(email);
 
@@ -93,6 +103,8 @@ public class CadastroServiceImpl implements CadastroService {
             lcCadastro.setSecret(passwordEncoder.encode(cadastroData.getSenha()));
         }
 
+        lcCadastro.setClienteAtivo('N');
+
         try {
             cadastroRepository.save(lcCadastro);
         } catch (Exception e) {
@@ -103,7 +115,9 @@ public class CadastroServiceImpl implements CadastroService {
 
         cadastroUsuarioKeyCloak.cadastroUsuarioKeyCloak(requestDTO.getItem().get(0).getCadastro().getUsuario(),
                 requestDTO.getItem().get(0).getCadastro().getEmail(), requestDTO.getItem().get(0).getCadastro().getSobrenome(),
-                requestDTO.getItem().get(0).getCadastro().getNome() ,"cliente", requestDTO.getItem().get(0).getCadastro().getSenha());
+                requestDTO.getItem().get(0).getCadastro().getNome(), "cliente", requestDTO.getItem().get(0).getCadastro().getSenha());
+
+        enviaEmailService.enviaEmail(requestDTO.getItem().get(0).getCadastro().getEmail());
     }
 
     private String getValidField(String field, String errorMessage) {
@@ -115,19 +129,6 @@ public class CadastroServiceImpl implements CadastroService {
 
     private boolean isCpfCnpjCadastrado(String cpfCnpj) {
         return cadastroRepository.existsByCpfCnpj(cpfCnpj);
-    }
-
-    private void validaEmail(String email) {
-
-        if (!email.contains("@")) {
-            throw new BusinessException(CP_0019.getCode());
-        }
-
-        boolean exists = cadastroRepository.existsByEmail(email);
-
-        if (exists) {
-            throw new BusinessException(CP_0020.getCode());
-        }
     }
 
     private String validaNotificacao(Boolean notificacao) {

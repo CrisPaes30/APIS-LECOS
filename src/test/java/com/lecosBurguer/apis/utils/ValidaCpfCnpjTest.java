@@ -44,9 +44,13 @@ class ValidaCpfCnpjTest {
     }
 
     @Test
-    void testDeveDarSucessoQuandoCnpjValido() {
+    void testDeveDarErroQuandoCnpjInvalido() {
 
-        assertDoesNotThrow(() -> validaCpfCnpj.isValidCpfCnpj("00.000.000/0000-00"));
+        BusinessException exception = assertThrows(BusinessException.class,
+                () ->validaCpfCnpj.isValidCpfCnpj("00.000.000/0000-00"));
+
+        assertEquals(CP_0016, exception.getCode());
     }
+
 
 }

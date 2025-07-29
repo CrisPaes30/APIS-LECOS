@@ -1,8 +1,9 @@
 package com.lecosBurguer.apis.api.cadastro.business;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lecosBurguer.apis.api.cadastro.request.RequestDTO;
-import com.lecosBurguer.apis.api.cadastro.service.impl.CadastroServiceImpl;
+import com.lecosBurguer.apis.api.cadastro.service.cadastroService.impl.CadastroServiceImpl;
 import com.lecosBurguer.apis.api.cadastro.utils.CadastroUtilsError;
 import com.lecosBurguer.apis.api.cadastro.utils.CadastroUtilsSucesso;
 import com.lecosBurguer.apis.api.response.ResponseDTO;
@@ -45,7 +46,7 @@ class CadastroBussinesTest {
 
 
     @Test
-    void testeDevecriarResponseComSucesso() {
+    void testeDevecriarResponseComSucesso() throws JsonProcessingException {
 
         CadastroUtilsSucesso cadastroUtilsSucesso = new CadastroUtilsSucesso();
 
@@ -57,7 +58,7 @@ class CadastroBussinesTest {
     }
 
     @Test
-    void testeDevecriarResponseComErro() {
+    void testeDevecriarResponseComErro() throws JsonProcessingException {
 
         CadastroUtilsError cadastroUtilsError = new CadastroUtilsError();
 
@@ -75,7 +76,7 @@ class CadastroBussinesTest {
     }
 
     @Test
-    void testeDevecriarResponseComErroComAMenssagemCP_0028() {
+    void testeDevecriarResponseComErroComAMenssagemCP_0028() throws JsonProcessingException {
 
         CadastroUtilsError cadastroUtilsError = new CadastroUtilsError();
 
