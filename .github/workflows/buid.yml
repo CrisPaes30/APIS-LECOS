@@ -3,15 +3,13 @@ name: Build Java Maven
 on:
   push:
     branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout codigo
+      - name: Checkout código
         uses: actions/checkout@v3
 
       - name: Setup Java
@@ -21,7 +19,13 @@ jobs:
           distribution: 'temurin'
 
       - name: Build com Maven
-        run: mvn clean install
+        run: mvn clean package
 
       - name: Rodar testes
         run: mvn test
+
+      - name: Upload do JAR gerado
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: target/*.jar
