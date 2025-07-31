@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -16,21 +17,19 @@ public class KeycloakService {
     private final KeycloakClient keycloakClient;
 
     public String getServiceToken() {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "client_credentials");
-        params.add("client_id", "api-authentication");
-        params.add("client_secret", "4GfSsK28nBtWtkZXwQlXJXUZLfxg60Xm");
+        Map<String, Object> params = new HashMap<>();
+        params.put("grant_type", "client_credentials");
+        params.put("client_id", "api-authentication");
+        params.put("client_secret", "4GfSsK28nBtWtkZXwQlXJXUZLfxg60Xm");
 
-        Map<String, Object> response = keycloakClient.getToken(
-                "lecosBurguer",
-                MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-                params
-        );
+        Map<String, Object> response = keycloakClient.getToken("lecosBurguer", params);
+
 
         if (response.containsKey("access_token")) {
             return response.get("access_token").toString();
         }
         throw new RuntimeException("Erro ao obter token do Keycloak");
     }
+
 }
 

@@ -1,16 +1,17 @@
 package com.lecosBurguer.apis.api.cadastro.service.cadastroService.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lecosBurguer.apis.api.cadastro.service.cadastroService.CadastraUsuariokeyCloak;
 import com.lecosBurguer.apis.token.brocker.AutenticacaoClient;
 import com.lecosBurguer.apis.token.brocker.KeycloakService;
+import com.lecosBurguer.apis.token.dto.AutenticaRequestDTO;
+import com.lecosBurguer.apis.token.dto.AutenticacaoRequestDTO;
+import com.lecosBurguer.apis.token.dto.AutenticacaoWrapperItemDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -22,28 +23,26 @@ public class CadastraUsuarioKeyCloakImpl implements CadastraUsuariokeyCloak {
 
     @Override
     public void cadastroUsuarioKeyCloak(String username, String email, String lastName, String firstName, String roles, String password) throws JsonProcessingException {
-
         log.info("Realizando cadastro no Keycloak");
 
-        String token = keycloakService.getServiceToken();
-        String bearerToken = "Bearer " + token;
+        String bearerToken = "Bearer " + keycloakService.getServiceToken();
 
-        Map<String, Object> autenticaRequest = Map.of(
-                "usuario", username,
-                "email", email,
-                "nome", firstName,
-                "sobrenome", lastName,
-                "role", roles,
-                "senha", password
-        );
+        AutenticaRequestDTO request = AutenticaRequestDTO.builder()
+                .usuario(username)
+                .email(email)
+                .nome(firstName)
+                .sobrenome(lastName)
+                .role(roles)
+                .senha(password)
+                .build();
 
-        Map<String, Object> item = Map.of(
-                "autenticaRequest", autenticaRequest
-        );
+        AutenticacaoWrapperItemDTO wrapperItem = AutenticacaoWrapperItemDTO.builder()
+                .autenticaRequest(request)
+                .build();
 
-        Map<String, Object> requestBody = Map.of(
-                "items", List.of(item)
-        );
+        AutenticacaoRequestDTO requestBody = AutenticacaoRequestDTO.builder()
+                .items(List.of(wrapperItem))
+                .build();
 
         autenticacaoClient.registerUser(bearerToken, requestBody);
     }

@@ -3,7 +3,6 @@ package com.lecosBurguer.apis.api.recupera.impl;
 import com.lecosBurguer.apis.api.recupera.recuparaUsuarioController.RecuperaLoginController;
 import com.lecosBurguer.apis.api.recupera.request.RecoveryDTO;
 import com.lecosBurguer.apis.api.response.ResponseDTO;
-import com.lecosBurguer.apis.api.usuario.request.RequestLoginDTO;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
