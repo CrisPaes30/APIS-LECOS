@@ -1,0 +1,221 @@
+openapi: 3.0.0
+info:
+  title: Cadastro API
+  version: 1.0.0
+servers:
+  - url: api
+tags:
+  - name: Usuários
+    description: APIs relacionadas a cadastro e login
+paths:
+  /v1/user-registration:
+    post:
+      summary: Cadastro de Usuários
+      tags:
+        - Usuários
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      itemId:
+                        type: string
+                      cadastro:
+                        type: object
+                        properties:
+                          nome:
+                            type: string
+                          sobrenome:
+                            type: string
+                          email:
+                            type: string
+                          cpfCnpj:
+                            type: string
+                          telefone:
+                            type: string
+                          endereco:
+                            type: object
+                            properties:
+                              cep:
+                                type: string
+                              logradouro:
+                                type: string
+                              bairro:
+                                type: string
+                              numero:
+                                type: string
+                              complemento:
+                                type: string
+                              uf:
+                                type: string
+                          user:
+                            type: string
+                          secret:
+                            type: string
+                          indNotificacao:
+                            type: string
+                            enum: [ "S", "N" ]
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                message:
+                                  type: string
+        '207':
+          description: Resposta com múltiplos status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            data:
+                              type: object
+                              nullable: true
+                              properties:
+                                message:
+                                  type: string
+                            error:
+                              type: array
+                              nullable: true
+                              items:
+                                type: object
+                                properties:
+                                  code:
+                                    type: string
+                                  message:
+                                    type: string
+                                  action:
+                                    type: string
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  item[0].cadastro.nome:
+                    type: string
+              example:
+                item[0].cadastro.nome: "O campo nome deve ser preenchido."
+  /v1/login-user:
+    post:
+      summary: Login de Usuário
+      tags:
+        - Usuários
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usernameOrEmail:
+                  type: string
+                secret:
+                  type: string
+            example:
+              usernameOrEmail: "String"
+              secret: "String"
+      responses:
+        '200':
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            data:
+                              type: object
+                              properties:
+                                message:
+                                  type: string
+                                status:
+                                  type: string
+              example:
+                data:
+                  items:
+                    - data:
+                        message: "String"
+                        status: "String"
+        '207':
+          description: Resposta com múltiplos status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            error:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  code:
+                                    type: string
+                                  message:
+                                    type: string
+                                  action:
+                                    type: string
+              example:
+                data:
+                  items:
+                    - error:
+                        - code: "String"
+                          message: "String"
+                          action: "String"
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  usernameOrEmail:
+                    type: string
+              example:
+                usernameOrEmail: "mensagem informando campo não preenchido"

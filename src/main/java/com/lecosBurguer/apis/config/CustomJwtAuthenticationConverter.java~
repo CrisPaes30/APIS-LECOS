@@ -1,0 +1,51 @@
+package com.lecosBurguer.apis.config;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class CustomJwtAuthenticationConverter extends JwtAuthenticationConverter {
+
+
+    protected Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
+        JwtGrantedAuthoritiesConverter defaultConverter = new JwtGrantedAuthoritiesConverter();
+        defaultConverter.setAuthorityPrefix("ROLE_");
+
+        // Extract default authorities (if any)
+        Collection<GrantedAuthority> authorities = defaultConverter.convert(jwt);
+
+        // Extract roles from realm_access.roles
+        List<String> realmRoles = jwt.getClaimAsMap("realm_access")
+                .getOrDefault("roles", List.of())
+                .stream()
+                .map(Object::toString)
+                .collect(Collectors.toList());
+
+        // Extract roles from resource_access.lecosBurguer.roles
+        List<String> resourceRoles = ((Map<String, Object>) jwt.getClaimAsMap("resource_access").get("lecosBurguer"))
+                .getOrDefault("roles", List.of())
+                .stream()
+                .map(Object::toString)
+                .collect(Collectors.toList());
+
+        // Combine all roles
+        List<String> combinedRoles = Stream.concat(realmRoles.stream(), resourceRoles.stream())
+                .collect(Collectors.toList());
+
+        // Convert roles to GrantedAuthority
+        authorities.addAll(combinedRoles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toList()));
+
+        return authorities;
+    }
+}
+

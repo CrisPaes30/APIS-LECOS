@@ -1,0 +1,4 @@
+package com.lecosBurguer.apis.api.cadastro.request;
+
+public record UserKeyCloakDTO() {
+}

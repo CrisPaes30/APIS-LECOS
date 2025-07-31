@@ -1,0 +1,93 @@
+openapi: 3.0.0
+info:
+  title: Cadastro API
+  version: 1.0.0
+servers:
+  - url: api
+paths:
+  /v1/login-user:
+    post:
+      summary: Cadastro de itens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      itemId:
+                        type: string
+                      cadastro:
+                        type: object
+                        properties:
+                          nome:
+                            type: string
+                          sobrenome:
+                            type: string
+                          email:
+                            type: string
+                          cpfCnpj:
+                            type: string
+                          telefone:
+                            type: string
+                          endereco:
+                            type: object
+                            properties:
+                              cep:
+                                type: string
+                              logradouro:
+                                type: string
+                              bairro:
+                                type: string
+                              numero:
+                                type: string
+                              complemento:
+                                type: string
+                              uf:
+                                type: string
+                          user:
+                            type: string
+                          secret:
+                            type: string
+                          indNotificacao:
+                            type: string
+                            enum: ["S", "N"]
+      responses:
+        '207':
+          description: Resposta com múltiplos status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            itemId:
+                              type: string
+                            data:
+                              type: object
+                              properties:
+                                message:
+                                  type: string
+                            error:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  code:
+                                    type: string
+                                  message:
+                                    type: string
+                                  action:
+                                    type: string
