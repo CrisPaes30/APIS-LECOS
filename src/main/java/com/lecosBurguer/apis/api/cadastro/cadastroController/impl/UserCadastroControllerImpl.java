@@ -35,7 +35,7 @@ public class UserCadastroControllerImpl implements UserCadastroController {
 
         ResponseDTO responseDTO = cadastroBussines.createResponse(requestDTO);
 
-        return new ResponseEntity<>(responseDTO, hasError(responseDTO) ? HttpStatus.MULTI_STATUS : HttpStatus.CREATED);
+        return new ResponseEntity<>(responseDTO, hasError(responseDTO) ? HttpStatus.BAD_REQUEST : HttpStatus.CREATED);
     }
 
     private boolean hasError(ResponseDTO responseBuilder) {

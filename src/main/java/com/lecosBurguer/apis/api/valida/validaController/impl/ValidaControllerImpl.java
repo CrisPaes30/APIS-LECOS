@@ -80,7 +80,7 @@ public class ValidaControllerImpl implements ValidaController {
         }
 
         LcCadastro usuario = mail.get();
-        usuario.setClienteAtivo('A');
+        usuario.setClienteAtivo('S');
         cadastroRepository.save(usuario);
 
         return ResponseEntity.ok( new TokenResponseDTO("Cadastro confirmado com sucesso!"));

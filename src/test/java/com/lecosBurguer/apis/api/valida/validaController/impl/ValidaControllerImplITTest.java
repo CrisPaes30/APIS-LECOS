@@ -1,5 +1,6 @@
 package com.lecosBurguer.apis.api.valida.validaController.impl;
 
+
 import com.lecosBurguer.apis.entities.LcCadastro;
 import com.lecosBurguer.apis.repository.CadastroRepository;
 import com.lecosBurguer.apis.utils.TokenUtil;

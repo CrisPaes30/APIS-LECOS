@@ -60,7 +60,7 @@ class UserCadastroControllerImplITTest {
 
     @WithMockUser(roles = "cliente")
     @Test
-    void deveRetornar207QuandoCadastroParcial() throws Exception {
+    void deveRetornar400QuandoCadastroParcial() throws Exception {
         RequestDTO cadastro = RequestDTO.builder()
                 .item(List.of(
                         Items.builder()
@@ -88,7 +88,7 @@ class UserCadastroControllerImplITTest {
         mockMvc.perform(post("/v1/user-registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(cadastro)))
-                .andExpect(status().isMultiStatus())
+                .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.data.items[0].error[0].message").value("Email já cadastrado"));
     }
 
